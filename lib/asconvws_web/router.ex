@@ -18,6 +18,7 @@ defmodule AsconvwsWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    live "/asconv", AsconvLive
   end
 
   # Other scopes may use custom stacks.

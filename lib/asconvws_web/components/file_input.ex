@@ -8,6 +8,7 @@ defmodule AsconvwsWeb.FileInput do
   attr :mode, :string, required: true
   attr :url, :string, required: true
   attr :uploads, :any, required: true
+  attr :for, :any, required: true
 
   def input_form(assigns) do
     ~H"""
@@ -36,7 +37,7 @@ defmodule AsconvwsWeb.FileInput do
       </div>
       
     <!-- Form -->
-      <.form phx-submit="submit" multipart={@mode == :file}>
+      <.form for={@for} phx-submit="submit" phx-change="validate" multipart={@mode == :file}>
         <%= if @mode == :url do %>
           <input
             type="text"
@@ -46,7 +47,9 @@ defmodule AsconvwsWeb.FileInput do
             class="w-full border rounded px-2 py-1"
           />
         <% else %>
-          <.live_file_input upload={@uploads.file} />
+          <div phx-drop-target={@uploads.file.ref}>
+            <.live_file_input upload={@uploads.file} />
+          </div>
         <% end %>
 
         <.button type="submit" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded">

@@ -2,15 +2,24 @@ defmodule AsconvwsWeb.AsconvLive do
   use AsconvwsWeb, :live_view
 
   def mount(_params, _session, socket) do
-    socket = assign(socket, mode: :url, ascii: nil, filename: nil, url: "")
-    {:ok, allow_upload(socket, :file, accept: ~w(.png .jpg .jpeg .gif), max_entries: 1)}
+    form = to_form(%{}, as: "input")
+
+    {:ok,
+     socket
+     |> assign(form: form, mode: :url, ascii: nil, filename: nil, url: "")
+     |> allow_upload(:file, accept: ~w(.png .jpg .jpeg .gif), max_entries: 1)}
   end
 
   def handle_event("toggle_mode", %{"mode" => mode}, socket) do
     {:noreply, assign(socket, mode: String.to_atom(mode))}
   end
 
-  def handle_event("submit", %{"url" => url} = params, socket) when url != "" do
+  def handle_event("validate", _params, socket) do
+    IO.inspect(socket.assigns)
+    {:noreply, socket}
+  end
+
+  def handle_event("submit", %{"url" => url} = _params, socket) when url != "" do
     ascii_result = convert_to_ascii(url)
     {:noreply, assign(socket, ascii: ascii_result, filename: url)}
   end
@@ -18,12 +27,14 @@ defmodule AsconvwsWeb.AsconvLive do
   def handle_event("submit", _params, socket) do
     case socket.assigns.uploads.file.entries do
       [entry] ->
-        {:ok, tmp_path} =
+        file_path =
           consume_uploaded_entry(socket, entry, fn %{path: path} ->
-            {:ok, path}
+            dest = Path.join("priv/static/uploads", Path.basename(path))
+            File.cp!(path, dest)
+            dest
           end)
 
-        ascii_result = convert_to_ascii(tmp_path)
+        ascii_result = convert_to_ascii(file_path)
         {:noreply, assign(socket, ascii: ascii_result, filename: entry.client_name)}
 
       [] ->
@@ -48,7 +59,7 @@ defmodule AsconvwsWeb.AsconvLive do
       <.flash kind={:info} flash={@flash} />
       <.flash kind={:error} flash={@flash} />
 
-      <FileInput.input_form mode={@mode} url={@url} uploads={@uploads} />
+      <FileInput.input_form for={@form} mode={@mode} url={@url} uploads={@uploads} />
       
     <!-- ASCII output -->
       <%= if @ascii do %>
