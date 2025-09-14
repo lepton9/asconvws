@@ -15,13 +15,16 @@ defmodule AsconvwsWeb.AsconvLive do
   end
 
   def handle_event("validate", _params, socket) do
-    IO.inspect(socket.assigns)
     {:noreply, socket}
   end
 
   def handle_event("submit", %{"url" => url} = _params, socket) when url != "" do
     ascii_result = convert_to_ascii(url)
-    {:noreply, assign(socket, ascii: ascii_result, filename: url)}
+
+    {:noreply,
+     socket
+     |> assign(ascii: ascii_result, filename: url)
+     |> put_flash(:info, "Conversion successful for URL: #{url}")}
   end
 
   def handle_event("submit", _params, socket) do
@@ -35,7 +38,11 @@ defmodule AsconvwsWeb.AsconvLive do
           end)
 
         ascii_result = convert_to_ascii(file_path)
-        {:noreply, assign(socket, ascii: ascii_result, filename: entry.client_name)}
+
+        {:noreply,
+         socket
+         |> assign(ascii: ascii_result, filename: entry.client_name)
+         |> put_flash(:info, "Conversion successful for File: #{entry.client_name}")}
 
       [] ->
         {:noreply, socket}
@@ -56,8 +63,7 @@ defmodule AsconvwsWeb.AsconvLive do
     ~H"""
     <div>
       <Layouts.top_bar />
-      <.flash kind={:info} flash={@flash} />
-      <.flash kind={:error} flash={@flash} />
+      <Layouts.flash_group flash={@flash} />
 
       <FileInput.input_form for={@form} mode={@mode} url={@url} uploads={@uploads} />
       
