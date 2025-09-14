@@ -18,3 +18,9 @@ config :logger, level: :info
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
+
+prod_host = System.get_env("PROD_HOST") || "asconv.thelepton.com"
+
+config :asconvws, AsconvwsWeb.Endpoint,
+  url: [host: prod_host, port: 4001, scheme: "https"],
+  check_origin: ["https://#{prod_host}"]
