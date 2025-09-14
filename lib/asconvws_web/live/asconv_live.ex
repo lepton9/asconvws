@@ -29,7 +29,7 @@ defmodule AsconvwsWeb.AsconvLive do
       [entry] ->
         file_path =
           consume_uploaded_entry(socket, entry, fn %{path: path} ->
-            dest = Path.join("priv/static/uploads", Path.basename(path))
+            dest = Path.join("uploads", Path.basename(path))
             File.cp!(path, dest)
             dest
           end)
