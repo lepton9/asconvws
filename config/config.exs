@@ -14,7 +14,6 @@ config :asconvws,
 config :asconvws, AsconvwsWeb.Endpoint,
   url: [host: "127.0.0.1", port: 4000],
   http: [port: 4000],
-  https: [port: 4001],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: AsconvwsWeb.ErrorHTML, json: AsconvwsWeb.ErrorJSON],
