@@ -35,3 +35,7 @@ asconvws-*.tar
 npm-debug.log
 /assets/node_modules/
 
+priv/cert*
+uploads
+.env*
+
