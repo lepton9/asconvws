@@ -67,9 +67,7 @@ defmodule AsconvwsWeb.FileInput do
     ~H"""
     <div class="mt-6">
       <h2 class="font-bold mb-2">ASCII: {@filename}</h2>
-      <pre class="bg-black font-mono text-xs p-4 overflow-auto">
-        {@ascii}
-          </pre>
+      <pre class="bg-black font-mono text-xs p-4 overflow-auto">{@ascii}</pre>
     </div>
     """
   end
