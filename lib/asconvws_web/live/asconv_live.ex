@@ -19,12 +19,21 @@ defmodule AsconvwsWeb.AsconvLive do
   end
 
   def handle_event("submit", %{"url" => url} = _params, socket) when url != "" do
-    ascii_result = convert_to_ascii(url)
+    {result, ascii} = convert_to_ascii(url)
 
-    {:noreply,
-     socket
-     |> assign(ascii: ascii_result, filename: url)
-     |> put_flash(:info, "Conversion successful for URL: #{url}")}
+    case result do
+      :ok ->
+        {:noreply,
+         socket
+         |> assign(ascii: ascii, filename: url)
+         |> put_flash(:info, "Conversion successful for URL: #{url}")}
+
+      _ ->
+        {:noreply,
+         socket
+         |> assign(ascii: "", filename: url)
+         |> put_flash(:error, "Conversion failed: #{url}")}
+    end
   end
 
   def handle_event("submit", _params, socket) do
@@ -37,12 +46,21 @@ defmodule AsconvwsWeb.AsconvLive do
             dest
           end)
 
-        ascii_result = convert_to_ascii(file_path)
+        {result, ascii} = convert_to_ascii(file_path)
 
-        {:noreply,
-         socket
-         |> assign(ascii: ascii_result, filename: entry.client_name)
-         |> put_flash(:info, "Conversion successful for File: #{entry.client_name}")}
+        case result do
+          :ok ->
+            {:noreply,
+             socket
+             |> assign(ascii: ascii, filename: entry.client_name)
+             |> put_flash(:info, "Conversion successful for File: #{entry.client_name}")}
+
+          _ ->
+            {:noreply,
+             socket
+             |> assign(ascii: "", filename: entry.client_name)
+             |> put_flash(:error, "Conversion failed: #{entry.client_name}")}
+        end
 
       [] ->
         {:noreply, socket}
@@ -53,10 +71,12 @@ defmodule AsconvwsWeb.AsconvLive do
     # exe = Path.join(:code.priv_dir(:asconvws), "asconv")
     exe = "asconv"
 
-    {out, 0} =
-      System.cmd(exe, ["ascii", "-i", path, "-s", "0.1"], stderr_to_stdout: true)
+    {out, status} = System.cmd(exe, ["ascii", "-i", path, "-s", "0.1"])
 
-    out
+    case status do
+      0 -> {:ok, out}
+      _ -> {:error, ""}
+    end
   end
 
   def render(assigns) do
