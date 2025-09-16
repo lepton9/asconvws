@@ -47,8 +47,21 @@ defmodule AsconvwsWeb.FileInput do
             class="w-full border rounded px-2 py-1"
           />
         <% else %>
-          <div phx-drop-target={@uploads.file.ref}>
-            <.live_file_input upload={@uploads.file} />
+          <div
+            phx-drop-target={@uploads.file.ref}
+            class="relative border-2 border-dashed border-gray-300 rounded p-4 hover:border-blue-600 transition-colors"
+          >
+            <p class="text-center text-gray-500">
+              <%= if @uploads.file.entries != [] do %>
+                {List.first(@uploads.file.entries).client_name}
+              <% else %>
+                Drag and drop a file here, or click to select a file
+              <% end %>
+            </p>
+            <.live_file_input
+              upload={@uploads.file}
+              class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
           </div>
         <% end %>
 
