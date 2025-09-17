@@ -89,11 +89,11 @@ defmodule AsconvwsWeb.AsconvLive do
       <Layouts.top_bar />
       <Layouts.flash_group flash={@flash} />
 
-      <FileInput.input_form for={@form} mode={@mode} url={@url} uploads={@uploads} />
+      <Layouts.FileInput.input_form for={@form} mode={@mode} url={@url} uploads={@uploads} />
       
     <!-- ASCII output -->
       <%= if @ascii do %>
-        <FileInput.ascii filename={@filename} ascii={@ascii} />
+        <Layouts.FileInput.ascii filename={@filename} ascii={@ascii} />
       <% end %>
     </div>
     """

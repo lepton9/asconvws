@@ -1,4 +1,4 @@
-defmodule AsconvwsWeb.FileInput do
+defmodule AsconvwsWeb.Layouts.FileInput do
   use AsconvwsWeb, :component
 
   @doc """

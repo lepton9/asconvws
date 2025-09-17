@@ -96,7 +96,6 @@ defmodule AsconvwsWeb do
       # Common modules used in templates
       alias Phoenix.LiveView.JS
       alias AsconvwsWeb.Layouts
-      alias AsconvwsWeb.FileInput
 
       # Routes generation with the ~p sigil
       unquote(verified_routes())
