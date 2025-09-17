@@ -25,30 +25,46 @@ import { LiveSocket } from "phoenix_live_view"
 import { hooks as colocatedHooks } from "phoenix-colocated/asconvws"
 import topbar from "../vendor/topbar"
 
+
+const getAsciiText = (tag_name) => {
+  return document.getElementById(tag_name).textContent;
+}
+
+const hooks = {}
+
+hooks.AutoClearFlash = {
+  mounted() {
+    let ignoredIDs = ["client-error", "server-error"];
+    if (ignoredIDs.includes(this.el.id)) return;
+
+    let hideElementAfter = 3000; // ms
+    let clearFlashAfter = hideElementAfter + 500; // ms
+
+    setTimeout(() => {
+      this.el.style.opacity = 0;
+    }, hideElementAfter);
+
+    setTimeout(() => {
+      this.pushEvent("lv:clear-flash");
+    }, clearFlashAfter);
+  },
+}
+
+hooks.CopyToClipboard = {
+  mounted() {
+    let { to } = this.el.dataset;
+    this.el.addEventListener("click", (e) => {
+      let text = getAsciiText(to);
+      navigator.clipboard.writeText(text).then(() => { })
+    })
+  }
+}
+
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
-  hooks: {
-    ...colocatedHooks,
-    AutoClearFlash: {
-      mounted() {
-        let ignoredIDs = ["client-error", "server-error"];
-        if (ignoredIDs.includes(this.el.id)) return;
-
-        let hideElementAfter = 5000; // ms
-        let clearFlashAfter = hideElementAfter + 500; // ms
-
-        setTimeout(() => {
-          this.el.style.opacity = 0;
-        }, hideElementAfter);
-
-        setTimeout(() => {
-          this.pushEvent("lv:clear-flash");
-        }, clearFlashAfter);
-      },
-    },
-  },
+  hooks: { ...colocatedHooks, ...hooks },
 })
 
 // Show progress bar on live navigation and form submits
