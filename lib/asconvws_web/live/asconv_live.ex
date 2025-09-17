@@ -14,6 +14,10 @@ defmodule AsconvwsWeb.AsconvLive do
     {:noreply, assign(socket, mode: String.to_atom(mode))}
   end
 
+  def handle_event("copy_to_clipboard", _params, socket) do
+    {:noreply, socket |> put_flash(:info, "Copied to clipboard")}
+  end
+
   def handle_event("validate", _params, socket) do
     {:noreply, socket}
   end

@@ -79,8 +79,20 @@ defmodule AsconvwsWeb.FileInput do
   def ascii(assigns) do
     ~H"""
     <div class="mt-6">
-      <h2 class="font-bold mb-2">ASCII: {@filename}</h2>
-      <pre class="bg-black font-mono text-xs p-4 overflow-auto">{@ascii}</pre>
+      <div class="flex justify-between items-center">
+        <h2 class="font-bold mb-2">ASCII: {@filename}</h2>
+        <button
+          class="mt-2 bg-blue-600 text-white px-4 py-2 rounded"
+          phx-hook="CopyToClipboard"
+          phx-update="ignore"
+          phx-click="copy_to_clipboard"
+          data-to="ascii-content"
+          id="copy-clipboard"
+        >
+          Copy to Clipboard
+        </button>
+      </div>
+      <pre class="bg-black font-mono text-xs p-4 overflow-auto" id="ascii-content">{@ascii}</pre>
     </div>
     """
   end
