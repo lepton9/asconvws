@@ -32,8 +32,8 @@ defmodule AsconvwsWeb.AsconvLive do
     end
   end
 
-  def handle_info({"convert", path, name}, socket) do
-    {result, ascii} = convert_to_ascii(path)
+  def handle_info({"convert", path, name, params}, socket) do
+    {result, ascii} = convert_to_ascii(path, params)
 
     case result do
       :ok ->
@@ -53,11 +53,11 @@ defmodule AsconvwsWeb.AsconvLive do
   def handle_url(params, socket) do
     socket = assign(socket, state: :converting)
     url = params["url"]
-    send(self(), {"convert", url, url})
+    send(self(), {"convert", url, url, params})
     {:noreply, socket}
   end
 
-  def handle_file(_params, socket) do
+  def handle_file(params, socket) do
     case socket.assigns.uploads.file.entries do
       [entry] ->
         file_path =
@@ -68,7 +68,7 @@ defmodule AsconvwsWeb.AsconvLive do
           end)
 
         socket = assign(socket, state: :converting)
-        send(self(), {"convert", file_path, entry.client_name})
+        send(self(), {"convert", file_path, entry.client_name, params})
         {:noreply, socket}
 
       [] ->
@@ -76,16 +76,20 @@ defmodule AsconvwsWeb.AsconvLive do
     end
   end
 
-  defp convert_to_ascii(path) do
+  defp convert_to_ascii(path, params) do
     # exe = Path.join(:code.priv_dir(:asconvws), "asconv")
     exe = "asconv"
 
-    {out, status} = System.cmd(exe, ["ascii", "-i", path, "-s", "0.1"])
+    {out, status} = System.cmd(exe, make_args(path, params))
 
     case status do
       0 -> {:ok, out}
       _ -> {:error, ""}
     end
+  end
+
+  defp make_args(path, params) do
+    ["ascii", "-i", path, "-s", params["scale"]]
   end
 
   def render(assigns) do
