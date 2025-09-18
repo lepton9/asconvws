@@ -12,22 +12,23 @@ defmodule AsconvwsWeb.Layouts.FileInput do
 
   def input_form(assigns) do
     ~H"""
-    <div>
-      <div class="flex items-center space-x-4">
+    <div class="p-2 w-150">
+      <div id="mode-toggle" class="flex items-center space-x-4 p-1">
         <span class={"font-bold #{if @mode == :url, do: "text-black", else: "text-gray-500"}"}>
           URL
         </span>
 
         <label class="relative inline-flex items-center cursor-pointer">
-          <input
+          <.input
             type="checkbox"
+            name="mode"
             class="sr-only"
             phx-click="toggle_mode"
             phx-value-mode={if @mode == :url, do: "file", else: "url"}
           />
           <div class={"w-12 h-6 bg-gray-300 rounded-full shadow-inner transition-colors #{if @mode == :file, do: "bg-blue-600"}"}>
           </div>
-          <div class={"dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full shadow transition-transform #{if @mode == :file, do: "translate-x-6"}"}>
+          <div class={"dot absolute left-1 bg-white w-4 h-4 rounded-full shadow transition-transform #{if @mode == :file, do: "translate-x-6"}"}>
           </div>
         </label>
 
@@ -39,7 +40,7 @@ defmodule AsconvwsWeb.Layouts.FileInput do
     <!-- Form -->
       <.form for={@for} phx-submit="submit" phx-change="validate" multipart={@mode == :file}>
         <%= if @mode == :url do %>
-          <input
+          <.input
             type="text"
             name="url"
             value={@url}
@@ -65,7 +66,11 @@ defmodule AsconvwsWeb.Layouts.FileInput do
           </div>
         <% end %>
 
-        <.button type="submit" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded">
+        <.button
+          type="submit"
+          data-ripple-light="true"
+          class="mt-2 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br transition-all shadow-md disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none px-4 py-2 rounded"
+        >
           Submit
         </.button>
       </.form>
