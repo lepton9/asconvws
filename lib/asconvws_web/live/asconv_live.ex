@@ -4,7 +4,7 @@ defmodule AsconvwsWeb.AsconvLive do
   @type state :: :done | :converting
 
   def mount(_params, _session, socket) do
-    form = to_form(%{}, as: "input")
+    form = to_form(%{"url" => ""}, as: "input")
 
     {:ok,
      socket
@@ -24,28 +24,11 @@ defmodule AsconvwsWeb.AsconvLive do
     {:noreply, socket}
   end
 
-  def handle_event("submit", %{"url" => url} = _params, socket) when url != "" do
-    socket = assign(socket, state: :converting)
-    send(self(), {"convert", url, url})
-    {:noreply, socket}
-  end
-
-  def handle_event("submit", _params, socket) do
-    case socket.assigns.uploads.file.entries do
-      [entry] ->
-        file_path =
-          consume_uploaded_entry(socket, entry, fn %{path: path} ->
-            dest = Path.join("uploads", Path.basename(path))
-            File.cp!(path, dest)
-            dest
-          end)
-
-        socket = assign(socket, state: :converting)
-        send(self(), {"convert", file_path, entry.client_name})
-        {:noreply, socket}
-
-      [] ->
-        {:noreply, socket}
+  def handle_event("submit", %{"input" => params}, socket) do
+    case socket.assigns.mode do
+      :url -> handle_url(params, socket)
+      :file -> handle_file(params, socket)
+      _ -> {:noreply, socket}
     end
   end
 
@@ -67,6 +50,32 @@ defmodule AsconvwsWeb.AsconvLive do
     end
   end
 
+  def handle_url(params, socket) do
+    socket = assign(socket, state: :converting)
+    url = params["url"]
+    send(self(), {"convert", url, url})
+    {:noreply, socket}
+  end
+
+  def handle_file(_params, socket) do
+    case socket.assigns.uploads.file.entries do
+      [entry] ->
+        file_path =
+          consume_uploaded_entry(socket, entry, fn %{path: path} ->
+            dest = Path.join("uploads", Path.basename(path))
+            File.cp!(path, dest)
+            dest
+          end)
+
+        socket = assign(socket, state: :converting)
+        send(self(), {"convert", file_path, entry.client_name})
+        {:noreply, socket}
+
+      [] ->
+        {:noreply, socket}
+    end
+  end
+
   defp convert_to_ascii(path) do
     # exe = Path.join(:code.priv_dir(:asconvws), "asconv")
     exe = "asconv"
@@ -85,18 +94,21 @@ defmodule AsconvwsWeb.AsconvLive do
       <Layouts.top_bar />
       <Layouts.flash_group flash={@flash} />
 
-      <Layouts.FileInput.input_form for={@form} mode={@mode} url={@url} uploads={@uploads} />
-      <%= if @state == :converting do %>
-        <div class="flex items-center">
-          <Layouts.FileInput.spinner />
-          <p>Converting image..</p>
-        </div>
-      <% end %>
-      
+      <div class="p-2">
+        <Layouts.FileInput.input_form for={@form} mode={@mode} uploads={@uploads} />
+
+        <%= if @state == :converting do %>
+          <div class="flex items-center">
+            <Layouts.FileInput.spinner />
+            <p>Converting image..</p>
+          </div>
+        <% end %>
+        
     <!-- ASCII output -->
-      <%= if @ascii do %>
-        <Layouts.FileInput.ascii filename={@filename} ascii={@ascii} />
-      <% end %>
+        <%= if @ascii do %>
+          <Layouts.FileInput.ascii filename={@filename} ascii={@ascii} />
+        <% end %>
+      </div>
     </div>
     """
   end

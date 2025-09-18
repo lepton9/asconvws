@@ -6,7 +6,6 @@ defmodule AsconvwsWeb.Layouts.FileInput do
   """
 
   attr :mode, :string, required: true
-  attr :url, :string, required: true
   attr :uploads, :any, required: true
   attr :for, :any, required: true
 
@@ -38,12 +37,11 @@ defmodule AsconvwsWeb.Layouts.FileInput do
       </div>
       
     <!-- Form -->
-      <.form for={@for} phx-submit="submit" phx-change="validate" multipart={@mode == :file}>
+      <.form :let={f} for={@for} phx-submit="submit" phx-change="validate" multipart={@mode == :file}>
         <%= if @mode == :url do %>
           <.input
             type="text"
-            name="url"
-            value={@url}
+            field={f[:url]}
             placeholder="https://example.com/image.png"
             class="w-full border rounded px-2 py-1"
           />
@@ -65,6 +63,13 @@ defmodule AsconvwsWeb.Layouts.FileInput do
             />
           </div>
         <% end %>
+        <.input
+          type="number"
+          field={f[:scale]}
+          value="1"
+          min="0"
+          class="w-full border rounded px-2 py-1"
+        />
 
         <.button
           type="submit"
