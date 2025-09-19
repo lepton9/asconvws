@@ -4,7 +4,7 @@ defmodule AsconvwsWeb.AsconvLive do
   @type state :: :done | :converting
 
   def mount(_params, _session, socket) do
-    form = to_form(%{"url" => ""}, as: "input")
+    form = to_form(%{"url" => "", "scale" => "1"}, as: "input")
 
     {:ok,
      socket
@@ -13,15 +13,15 @@ defmodule AsconvwsWeb.AsconvLive do
   end
 
   def handle_event("toggle_mode", %{"mode" => mode}, socket) do
-    {:noreply, assign(socket, mode: String.to_atom(mode))}
+    {:noreply, socket |> assign(mode: String.to_atom(mode))}
   end
 
   def handle_event("copy_to_clipboard", _params, socket) do
     {:noreply, socket |> put_flash(:info, "Copied to clipboard")}
   end
 
-  def handle_event("validate", _params, socket) do
-    {:noreply, socket}
+  def handle_event("validate", %{"input" => input}, socket) do
+    {:noreply, assign(socket, :form, to_form(input, as: "input"))}
   end
 
   def handle_event("submit", %{"input" => params}, socket) do

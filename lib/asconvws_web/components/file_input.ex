@@ -77,7 +77,6 @@ defmodule AsconvwsWeb.Layouts.FileInput do
           field={f[:scale]}
           label="Scale:"
           type="number"
-          value="1"
           min="0"
           step="0.01"
           class="w-20 border rounded px-2 py-1"
