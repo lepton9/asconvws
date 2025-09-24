@@ -37,6 +37,7 @@ defmodule AsconvwsWeb.Layouts.FileInput do
 
   attr :mode, :string, required: true
   attr :uploads, :any, required: true
+  attr :edge_algs, :any, required: true
   attr :for, :any, required: true
 
   def input_form(assigns) do
@@ -78,9 +79,35 @@ defmodule AsconvwsWeb.Layouts.FileInput do
           label="Scale:"
           type="number"
           min="0"
-          step="0.01"
+          step="0.05"
           class="w-20 border rounded px-2 py-1"
         />
+        <.input
+          field={f[:brightness]}
+          label="Brightness:"
+          type="number"
+          min="0"
+          step="0.05"
+          class="w-20 border rounded px-2 py-1"
+        />
+
+        <div class="flex items-center space-x-4">
+          <.input
+            field={f[:edges]}
+            label="Edge detection"
+            type="checkbox"
+            class="mb-0 checkbox checkbox-sm"
+          />
+          <%= if @for.params["edges"] == "true" do %>
+            <.input
+              field={f[:edge_alg]}
+              label="Algorithm:"
+              type="select"
+              options={@edge_algs}
+              class="w-40 px-2 select"
+            />
+          <% end %>
+        </div>
 
         <.button
           type="submit"
