@@ -95,7 +95,7 @@ defmodule AsconvwsWeb.AsconvLive do
           consume_uploaded_entry(socket, entry, fn %{path: path} ->
             dest = Path.join("uploads", Path.basename(path))
             File.cp!(path, dest)
-            dest
+            {:postpone, dest}
           end)
 
         socket = assign(socket, state: :converting)
