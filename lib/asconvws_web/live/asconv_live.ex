@@ -75,10 +75,17 @@ defmodule AsconvwsWeb.AsconvLive do
   end
 
   def handle_url(params, socket) do
-    socket = assign(socket, state: :converting)
     url = params["url"]
-    send(self(), {"convert", url, url, params})
-    {:noreply, socket}
+
+    case url do
+      "" ->
+        {:noreply, socket}
+
+      _ ->
+        socket = assign(socket, state: :converting)
+        send(self(), {"convert", url, url, params})
+        {:noreply, socket}
+    end
   end
 
   def handle_file(params, socket) do
