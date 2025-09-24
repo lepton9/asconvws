@@ -4,8 +4,8 @@ defmodule AsconvwsWeb.AsconvLive do
   @type state :: :done | :converting
   @edge_algs [
     %{name: "Sobel", id: "1"},
-    %{name: "LoG", id: "2"},
-    %{name: "DoG", id: "3"}
+    %{name: "DoG", id: "2"},
+    %{name: "LoG", id: "3"}
   ]
   @edge_algs_options Enum.map(@edge_algs, fn %{name: name, id: id} -> {name, id} end)
 
@@ -16,6 +16,7 @@ defmodule AsconvwsWeb.AsconvLive do
           "url" => "",
           "scale" => 1,
           "brightness" => 1,
+          "invert" => "false",
           "edges" => "false",
           "edge_alg" => 1
         },
@@ -127,10 +128,11 @@ defmodule AsconvwsWeb.AsconvLive do
   end
 
   defp make_args(path, params) do
-    ["ascii", "-i", path, "-s", params["scale"], "-b", params["brightness"]] ++
-      if params["edges"] == "true",
-        do: ["-e", get_alg_name(params["edge_alg"])],
-        else: []
+    ["ascii", "-i", path, "-s", params["scale"], "-b", params["brightness"]]
+    |> Enum.concat(if params["invert"] == "true", do: ["-r"], else: [])
+    |> Enum.concat(
+      if params["edges"] == "true", do: ["-e", get_alg_name(params["edge_alg"])], else: []
+    )
   end
 
   def render(assigns) do

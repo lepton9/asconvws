@@ -90,6 +90,12 @@ defmodule AsconvwsWeb.Layouts.FileInput do
           step="0.05"
           class="w-20 border rounded px-2 py-1"
         />
+        <.input
+          field={f[:invert]}
+          label="Invert charset"
+          type="checkbox"
+          class="mb-0 checkbox checkbox-sm"
+        />
 
         <div class="flex items-center space-x-4">
           <.input
