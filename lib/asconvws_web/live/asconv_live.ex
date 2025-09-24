@@ -2,13 +2,37 @@ defmodule AsconvwsWeb.AsconvLive do
   use AsconvwsWeb, :live_view
 
   @type state :: :done | :converting
+  @edge_algs [
+    %{name: "Sobel", id: "1"},
+    %{name: "LoG", id: "2"},
+    %{name: "DoG", id: "3"}
+  ]
+  @edge_algs_options Enum.map(@edge_algs, fn %{name: name, id: id} -> {name, id} end)
 
   def mount(_params, _session, socket) do
-    form = to_form(%{"url" => "", "scale" => "1"}, as: "input")
+    form =
+      to_form(
+        %{
+          "url" => "",
+          "scale" => 1,
+          "brightness" => 1,
+          "edges" => "false",
+          "edge_alg" => 1
+        },
+        as: "input"
+      )
 
     {:ok,
      socket
-     |> assign(form: form, mode: :url, ascii: nil, filename: nil, url: "", state: :done)
+     |> assign(
+       form: form,
+       mode: :url,
+       ascii: nil,
+       filename: nil,
+       url: "",
+       state: :done,
+       edge_algs: @edge_algs_options
+     )
      |> allow_upload(:file, accept: ~w(.png .jpg .jpeg .gif), max_entries: 1)}
   end
 
@@ -88,8 +112,18 @@ defmodule AsconvwsWeb.AsconvLive do
     end
   end
 
+  def get_alg_name(id) do
+    case Enum.find(@edge_algs, fn %{id: eid} -> eid == id end) do
+      %{name: name} -> name
+      nil -> nil
+    end
+  end
+
   defp make_args(path, params) do
-    ["ascii", "-i", path, "-s", params["scale"]]
+    ["ascii", "-i", path, "-s", params["scale"], "-b", params["brightness"]] ++
+      if params["edges"] == "true",
+        do: ["-e", get_alg_name(params["edge_alg"])],
+        else: []
   end
 
   def render(assigns) do
@@ -99,7 +133,12 @@ defmodule AsconvwsWeb.AsconvLive do
       <Layouts.flash_group flash={@flash} />
 
       <div class="p-2">
-        <Layouts.FileInput.input_form for={@form} mode={@mode} uploads={@uploads} />
+        <Layouts.FileInput.input_form
+          for={@form}
+          mode={@mode}
+          uploads={@uploads}
+          edge_algs={@edge_algs}
+        />
 
         <%= if @state == :converting do %>
           <div class="flex items-center">
