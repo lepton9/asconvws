@@ -60,6 +60,38 @@ hooks.CopyToClipboard = {
   }
 }
 
+hooks.FitAscii = {
+  mounted() {
+    const el = this.el
+
+    this.resize = () => {
+      const fit = el.dataset.fit;
+      if (fit && fit == "true") {
+        const vw = window.innerWidth
+        const vh = window.innerHeight
+
+        const size = Math.min(vw, vh) * 0.005
+        console.log("size:", size)
+
+        el.style.fontSize = `${size}px`
+        // el.style.lineHeight = "1"
+      } else {
+        el.style.fontSize = "0.75rem"
+      }
+    }
+
+    this.resize()
+    window.addEventListener("resize", this.resize)
+    this.handleEvent("phx:remove", () => {
+      window.removeEventListener("resize", this.resize)
+    })
+  },
+
+  updated() {
+    this.resize();
+  }
+}
+
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
