@@ -32,13 +32,22 @@ defmodule AsconvwsWeb.AsconvLive do
        filename: nil,
        url: "",
        state: :done,
-       edge_algs: @edge_algs_options
+       edge_algs: @edge_algs_options,
+       fit_to_window: false
      )
      |> allow_upload(:file, accept: ~w(.png .jpg .jpeg .gif), max_entries: 1)}
   end
 
   def handle_event("toggle_mode", %{"mode" => mode}, socket) do
     {:noreply, socket |> assign(mode: String.to_atom(mode))}
+  end
+
+  def handle_event("toggle_fit", %{"value" => "true"}, socket) do
+    {:noreply, assign(socket, fit_to_window: true)}
+  end
+
+  def handle_event("toggle_fit", _params, socket) do
+    {:noreply, assign(socket, fit_to_window: false)}
   end
 
   def handle_event("copy_to_clipboard", _params, socket) do
@@ -158,7 +167,7 @@ defmodule AsconvwsWeb.AsconvLive do
         
     <!-- ASCII output -->
         <%= if @ascii do %>
-          <Layouts.FileInput.ascii filename={@filename} ascii={@ascii} />
+          <Layouts.FileInput.ascii filename={@filename} fit={@fit_to_window} ascii={@ascii} />
         <% end %>
       </div>
     </div>
