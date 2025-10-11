@@ -150,7 +150,7 @@ defmodule AsconvwsWeb.CoreComponents do
 
   attr :type, :string,
     default: "text",
-    values: ~w(checkbox color date datetime-local email file month number password
+    values: ~w(checkbox checkbox_bare color date datetime-local email file month number password
                search select tel text textarea time url week)
 
   attr :field, Phoenix.HTML.FormField,
@@ -203,6 +203,25 @@ defmodule AsconvwsWeb.CoreComponents do
       </label>
       <.error :for={msg <- @errors}>{msg}</.error>
     </div>
+    """
+  end
+
+  def input(%{type: "checkbox_bare"} = assigns) do
+    assigns =
+      assign_new(assigns, :checked, fn ->
+        Phoenix.HTML.Form.normalize_value("checkbox", assigns[:value])
+      end)
+
+    ~H"""
+    <input
+      type="checkbox"
+      id={@id}
+      name={@name}
+      value="true"
+      checked={@checked}
+      class={@class || "checkbox checkbox-sm"}
+      {@rest}
+    />
     """
   end
 
