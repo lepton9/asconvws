@@ -31,11 +31,11 @@
   --color-base-200: oklch(21% 0.006 56.043);
   --color-base-300: oklch(26% 0.007 34.298);
   --color-base-content: oklch(97% 0.001 106.424);
-  --color-primary: oklch(29% 0.136 325.661);
+  --color-primary: oklch(28% 0.109 3.907);
   --color-primary-content: oklch(14% 0.005 285.823);
   --color-secondary: oklch(25% 0.09 281.288);
   --color-secondary-content: oklch(26% 0.051 172.552);
-  --color-accent: oklch(80% 0.105 251.813);
+  --color-accent: oklch(40% 0.153 2.432);
   --color-accent-content: oklch(28% 0.091 267.935);
   --color-neutral: oklch(37% 0.01 67.558);
   --color-neutral-content: oklch(98% 0.001 106.423);
@@ -53,9 +53,10 @@
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
-  --depth: 1;
-  --noise: 1;
+  --depth: 0;
+  --noise: 0;
 }
+
 
 @plugin "../vendor/daisyui-theme" {
   name: "light";
@@ -66,14 +67,14 @@
   --color-base-200: oklch(86.445% 0.002 17.197);
   --color-base-300: oklch(79.938% 0.001 17.197);
   --color-base-content: oklch(16.961% 0.001 17.32);
-  --color-primary: oklch(29% 0.136 325.661);
+  --color-primary: oklch(28% 0.109 3.907);
   --color-primary-content: oklch(100% 0 0);
   --color-secondary: oklch(25% 0.09 281.288);
   --color-secondary-content: oklch(89.699% 0.022 355.095);
-  --color-accent: oklch(56.273% 0.054 154.39);
+  --color-accent: oklch(40% 0.153 2.432);
   --color-accent-content: oklch(100% 0 0);
-  --color-neutral: oklch(24.155% 0.049 89.07);
-  --color-neutral-content: oklch(92.951% 0.002 17.197);
+  --color-neutral: oklch(37% 0.01 67.558);
+  --color-neutral-content: oklch(98% 0.001 106.423);
   --color-info: oklch(72.06% 0.191 231.6);
   --color-info-content: oklch(0% 0 0);
   --color-success: oklch(64.8% 0.15 160);
@@ -88,8 +89,8 @@
   --size-selector: 0.25rem;
   --size-field: 0.25rem;
   --border: 1px;
-  --depth: 1;
-  --noise: 1;
+  --depth: 0;
+  --noise: 0;
 }
 
 /* Add variants based on LiveView classes */

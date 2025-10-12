@@ -159,7 +159,7 @@ defmodule AsconvwsWeb.AsconvLive do
         />
 
         <%= if @state == :converting do %>
-          <div class="flex items-center">
+          <div class="flex items-center space-x-2">
             <Layouts.FileInput.spinner />
             <p>Converting image..</p>
           </div>

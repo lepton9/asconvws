@@ -10,7 +10,7 @@ defmodule AsconvwsWeb.Layouts.FileInput do
   def mode_toggle(assigns) do
     ~H"""
     <div id="mode-toggle" class="flex items-center space-x-4 p-1">
-      <span class={"font-bold #{if @mode == :url, do: "text-black", else: "text-gray-500"}"}>
+      <span class={"font-bold #{if @mode == :url, do: "text-accent", else: "text-gray-500"}"}>
         URL
       </span>
 
@@ -22,13 +22,13 @@ defmodule AsconvwsWeb.Layouts.FileInput do
           phx-click="toggle_mode"
           phx-value-mode={if @mode == :url, do: "file", else: "url"}
         />
-        <div class={"w-12 h-6 bg-gray-300 rounded-full shadow-inner transition-colors #{if @mode == :file, do: "bg-blue-600"}"}>
+        <div class={"w-12 h-6 rounded-full shadow-inner transition-colors #{if @mode == :file, do: "bg-accent", else: "bg-gray-300 "}"}>
         </div>
-        <div class={"dot absolute left-1 bg-white w-4 h-4 rounded-full shadow transition-transform #{if @mode == :file, do: "translate-x-6"}"}>
+        <div class={"dot absolute left-1 w-4 h-4 rounded-full shadow transition-transform #{if @mode == :file, do: "translate-x-6 bg-white ", else: "bg-accent"}"}>
         </div>
       </label>
 
-      <span class={"font-bold #{if @mode == :file, do: "text-black", else: "text-gray-500"}"}>
+      <span class={"font-bold #{if @mode == :file, do: "text-accent", else: "text-gray-500"}"}>
         File
       </span>
     </div>
@@ -46,7 +46,14 @@ defmodule AsconvwsWeb.Layouts.FileInput do
       <.mode_toggle mode={@mode} />
       
     <!-- Form -->
-      <.form :let={f} for={@for} phx-submit="submit" phx-change="validate" multipart={@mode == :file}>
+      <.form
+        :let={f}
+        for={@for}
+        phx-submit="submit"
+        phx-change="validate"
+        multipart={@mode == :file}
+        class="space-y-2"
+      >
         <%= if @mode == :url do %>
           <.input
             type="text"
@@ -58,13 +65,13 @@ defmodule AsconvwsWeb.Layouts.FileInput do
         <% else %>
           <div
             phx-drop-target={@uploads.file.ref}
-            class="relative border-2 border-dashed border-gray-300 rounded p-4 hover:border-blue-600 transition-colors"
+            class="relative border-2 border-dashed border-gray-300 rounded p-4 hover:border-accent transition-colors"
           >
             <p class="text-center text-gray-500">
               <%= if @uploads.file.entries != [] do %>
                 {List.first(@uploads.file.entries).client_name}
               <% else %>
-                Drag and drop a file here, or click to select a file
+                Drag and drop or click to select a file
               <% end %>
             </p>
             <.live_file_input
@@ -90,19 +97,13 @@ defmodule AsconvwsWeb.Layouts.FileInput do
           step="0.05"
           class="w-20 border rounded px-2 py-1"
         />
-        <.input
-          field={f[:invert]}
-          label="Invert charset"
-          type="checkbox"
-          class="mb-0 checkbox checkbox-sm"
-        />
 
         <div class="flex items-center space-x-4">
           <.input
             field={f[:edges]}
             label="Edge detection"
             type="checkbox"
-            class="mb-0 checkbox checkbox-sm"
+            class="mb-0 checkbox checkbox-sm text-accent"
           />
           <%= if @for.params["edges"] == "true" do %>
             <.input
@@ -114,6 +115,13 @@ defmodule AsconvwsWeb.Layouts.FileInput do
             />
           <% end %>
         </div>
+
+        <.input
+          field={f[:invert]}
+          label="Invert charset"
+          type="checkbox"
+          class="mb-0 checkbox checkbox-sm text-accent"
+        />
 
         <.button
           type="submit"
@@ -169,7 +177,7 @@ defmodule AsconvwsWeb.Layouts.FileInput do
         id="ascii-content"
         phx-hook="FitAscii"
         data-fit={if @fit, do: "true", else: "false"}
-        class="bg-black font-mono p-4 overflow-auto text-sm text-white-50"
+        class="bg-black font-mono p-4 overflow-auto text-sm text-neutral-50"
       >{@ascii}</pre>
     </div>
     """
@@ -177,24 +185,7 @@ defmodule AsconvwsWeb.Layouts.FileInput do
 
   def spinner(assigns) do
     ~H"""
-    <div role="status">
-      <svg
-        aria-hidden="true"
-        class="w-4 h-4 me-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-        viewBox="0 0 100 101"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-          fill="currentColor"
-        /><path
-          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-          fill="currentFill"
-        />
-      </svg>
-      <span class="sr-only">Loading...</span>
-    </div>
+    <span class="loading loading-spinner loading-sm text-accent"></span>
     """
   end
 end

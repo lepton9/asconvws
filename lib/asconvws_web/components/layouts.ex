@@ -123,7 +123,7 @@ defmodule AsconvwsWeb.Layouts do
 
   def top_bar(assigns) do
     ~H"""
-    <div id={@id} class="px-2 py-2">
+    <div id={@id} class="px-3 py-2 border-b border-neutral">
       <div class="flex justify-between items-center">
         <div class="flex">
           <a href="https://github.com/lepton9/asconv">
