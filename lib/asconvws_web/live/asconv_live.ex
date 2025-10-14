@@ -15,6 +15,8 @@ defmodule AsconvwsWeb.AsconvLive do
         %{
           "url" => "",
           "scale" => 1,
+          "width" => "",
+          "height" => "",
           "brightness" => 1,
           "invert" => "false",
           "edges" => "false",
