@@ -86,17 +86,19 @@ defmodule AsconvwsWeb.Layouts.FileInput do
             field={f[:width]}
             label="Width:"
             type="number"
+            placeholder="default"
             min="0"
             step="10"
-            class="w-20 border rounded px-2 py-1"
+            class="w-25 border rounded px-2 py-1"
           />
           <.input
             field={f[:height]}
             label="Height:"
             type="number"
+            placeholder="default"
             min="0"
             step="10"
-            class="w-20 border rounded px-2 py-1"
+            class="w-25 border rounded px-2 py-1"
           />
         </div>
 

@@ -140,6 +140,18 @@ defmodule AsconvwsWeb.AsconvLive do
 
   defp make_args(path, params) do
     ["ascii", "-i", path, "-s", params["scale"], "-b", params["brightness"]]
+    |> Enum.concat(
+      case Integer.parse(params["width"]) do
+        {width, ""} when width > 0 -> ["-W", Integer.to_string(width)]
+        _ -> []
+      end
+    )
+    |> Enum.concat(
+      case Integer.parse(params["height"]) do
+        {height, ""} when height > 0 -> ["-H", Integer.to_string(height)]
+        _ -> []
+      end
+    )
     |> Enum.concat(if params["invert"] == "true", do: ["-r"], else: [])
     |> Enum.concat(
       if params["edges"] == "true", do: ["-e", get_alg_name(params["edge_alg"])], else: []
