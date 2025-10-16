@@ -119,7 +119,7 @@ defmodule AsconvwsWeb.Layouts.FileInput do
           class="w-20 border rounded px-2 py-1"
         />
 
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-4 h-10">
           <.input
             field={f[:edges]}
             label="Edge detection"
@@ -134,6 +134,17 @@ defmodule AsconvwsWeb.Layouts.FileInput do
               options={@edge_algs}
               class="w-40 px-2 select"
             />
+
+            <%= if @for.params["edge_alg"] in ["2", "3"] do %>
+              <.input
+                field={f[:sigma]}
+                label="Sigma:"
+                type="number"
+                min="0"
+                step="0.05"
+                class="w-20 border rounded px-2 py-1"
+              />
+            <% end %>
           <% end %>
         </div>
 

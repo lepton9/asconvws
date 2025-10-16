@@ -14,13 +14,14 @@ defmodule AsconvwsWeb.AsconvLive do
       to_form(
         %{
           "url" => "",
-          "scale" => 1,
+          "scale" => "1",
           "width" => "",
           "height" => "",
-          "brightness" => 1,
+          "brightness" => "1",
           "invert" => "false",
           "edges" => "false",
-          "edge_alg" => 1
+          "edge_alg" => "1",
+          "sigma" => "1"
         },
         as: "input"
       )
@@ -57,10 +58,13 @@ defmodule AsconvwsWeb.AsconvLive do
   end
 
   def handle_event("validate", %{"input" => input}, socket) do
-    {:noreply, assign(socket, :form, to_form(input, as: "input"))}
+    merged_params = merge_params(input, socket)
+    {:noreply, assign(socket, form: to_form(merged_params, as: "input"))}
   end
 
   def handle_event("submit", %{"input" => params}, socket) do
+    params = merge_params(params, socket)
+
     case socket.assigns.mode do
       :url -> handle_url(params, socket)
       :file -> handle_file(params, socket)
@@ -119,6 +123,11 @@ defmodule AsconvwsWeb.AsconvLive do
     end
   end
 
+  defp merge_params(new_params, socket) do
+    prev_params = socket.assigns.form.params
+    Map.merge(prev_params, new_params, fn _key, _old, new -> new end)
+  end
+
   defp convert_to_ascii(path, params) do
     # exe = Path.join(:code.priv_dir(:asconvws), "asconv")
     exe = "asconv"
@@ -154,7 +163,9 @@ defmodule AsconvwsWeb.AsconvLive do
     )
     |> Enum.concat(if params["invert"] == "true", do: ["-r"], else: [])
     |> Enum.concat(
-      if params["edges"] == "true", do: ["-e", get_alg_name(params["edge_alg"])], else: []
+      if params["edges"] == "true",
+        do: ["-e", get_alg_name(params["edge_alg"]), "--sigma", params["sigma"]],
+        else: []
     )
   end
 
