@@ -32,6 +32,8 @@ defmodule AsconvwsWeb.AsconvLive do
        form: form,
        mode: :url,
        ascii: nil,
+       width: 0,
+       height: 0,
        filename: nil,
        url: "",
        state: :done,
@@ -77,9 +79,11 @@ defmodule AsconvwsWeb.AsconvLive do
 
     case result do
       :ok ->
+        {width, height} = get_ascii_size(ascii)
+
         {:noreply,
          socket
-         |> assign(ascii: ascii, filename: name, state: :done)
+         |> assign(ascii: ascii, filename: name, width: width, height: height, state: :done)
          |> put_flash(:info, "Conversion successful")}
 
       _ ->
@@ -126,6 +130,13 @@ defmodule AsconvwsWeb.AsconvLive do
   defp merge_params(new_params, socket) do
     prev_params = socket.assigns.form.params
     Map.merge(prev_params, new_params, fn _key, _old, new -> new end)
+  end
+
+  defp get_ascii_size(ascii) do
+    [first_line | _] = String.split(ascii, "\n")
+    width = String.length(first_line)
+    height = max(Enum.count(String.split(ascii, "\n")) - 1, 0)
+    {width, height}
   end
 
   defp convert_to_ascii(path, params) do
@@ -192,7 +203,13 @@ defmodule AsconvwsWeb.AsconvLive do
         
     <!-- ASCII output -->
         <%= if @ascii do %>
-          <Layouts.FileInput.ascii filename={@filename} fit={@fit_to_window} ascii={@ascii} />
+          <Layouts.FileInput.ascii
+            filename={@filename}
+            fit={@fit_to_window}
+            ascii={@ascii}
+            width={@width}
+            height={@height}
+          />
         <% end %>
       </div>
     </div>

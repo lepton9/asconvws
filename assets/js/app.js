@@ -53,32 +53,38 @@ hooks.AutoClearFlash = {
 hooks.CopyToClipboard = {
   mounted() {
     let { to } = this.el.dataset;
-    this.el.addEventListener("click", (e) => {
+    this.el.addEventListener("click", (_e) => {
       let text = getAsciiText(to);
-      navigator.clipboard.writeText(text).then(() => { })
+      navigator.clipboard.writeText(text).then(() => { });
     })
   }
 }
 
 hooks.FitAscii = {
   mounted() {
-    const el = this.el
 
     this.resize = () => {
-      const fit = el.dataset.fit;
-      if (fit && fit == "true") {
-        const vw = window.innerWidth
-        const vh = window.innerHeight
+      const el = this.el;
 
-        const size = Math.min(vw, vh) * 0.005
-        console.log("size:", size)
+      const fit = el.dataset.fit === "true";
+      const width = parseInt(el.dataset.width);
+      const height = parseInt(el.dataset.height);
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
 
-        el.style.fontSize = `${size}px`
-        // el.style.lineHeight = "1"
+      if (fit && width && height) {
+        const charAspect = 1.5;
+
+        const fontSize = Math.min(
+          vw / (width / charAspect),
+          vh / (height * charAspect)
+        );
+
+        el.style.fontSize = `${fontSize}px`;
       } else {
-        el.style.fontSize = "0.75rem"
+        el.style.fontSize = "0.75rem";
       }
-    }
+    };
 
     this.resize()
     window.addEventListener("resize", this.resize)

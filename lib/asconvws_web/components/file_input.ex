@@ -170,6 +170,8 @@ defmodule AsconvwsWeb.Layouts.FileInput do
   attr :filename, :string, required: true
   attr :fit, :atom, required: true
   attr :ascii, :string, required: true
+  attr :width, :integer, required: true
+  attr :height, :integer, required: true
 
   def ascii(assigns) do
     ~H"""
@@ -209,7 +211,9 @@ defmodule AsconvwsWeb.Layouts.FileInput do
         id="ascii-content"
         phx-hook="FitAscii"
         data-fit={if @fit, do: "true", else: "false"}
-        class="bg-black font-mono p-4 overflow-auto text-sm text-neutral-50"
+        data-width={@width}
+        data-height={@height}
+        class="bg-black font-mono p-4 overflow-auto text-sm text-neutral-50 transition-[font-size] duration-200 ease-in-out"
       >{@ascii}</pre>
     </div>
     """
