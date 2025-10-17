@@ -1,7 +1,7 @@
 defmodule AsconvwsWeb.AsconvLive do
   use AsconvwsWeb, :live_view
 
-  @type state :: :done | :converting
+  @type state :: :done | :converting | :uploading
   @edge_algs [
     %{name: "Sobel", id: "1"},
     %{name: "DoG", id: "2"},
@@ -37,10 +37,20 @@ defmodule AsconvwsWeb.AsconvLive do
        filename: nil,
        url: "",
        state: :done,
+       progress: 0,
        edge_algs: @edge_algs_options,
        fit_to_window: false
      )
-     |> allow_upload(:file, accept: ~w(.png .jpg .jpeg .gif), max_entries: 1)}
+     |> allow_upload(:file,
+       accept: ~w(.png .jpg .jpeg .gif),
+       max_entries: 1,
+       auto_upload: false,
+       progress: &handle_progress/3
+     )}
+  end
+
+  def handle_progress(:file, entry, socket) do
+    {:noreply, assign(socket, state: :uploading, progress: entry.progress)}
   end
 
   def handle_event("toggle_mode", %{"mode" => mode}, socket) do
@@ -194,10 +204,15 @@ defmodule AsconvwsWeb.AsconvLive do
           edge_algs={@edge_algs}
         />
 
-        <%= if @state == :converting do %>
+        <%= if @state != :done do %>
           <div class="flex items-center space-x-2">
             <Layouts.FileInput.spinner />
-            <p>Converting image..</p>
+            <%= if @state == :converting do %>
+              <p>Converting image..</p>
+            <% end %>
+            <%= if @state == :uploading do %>
+              <p>Uploading image.. {@progress}%</p>
+            <% end %>
           </div>
         <% end %>
         
