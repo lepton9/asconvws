@@ -121,6 +121,10 @@ defmodule AsconvwsWeb.AsconvLive do
   def handle_file(params, socket) do
     case socket.assigns.uploads.file.entries do
       [entry] ->
+        if !entry.done? do
+          {:noreply, socket}
+        end
+
         file_path =
           consume_uploaded_entry(socket, entry, fn %{path: path} ->
             dest = Path.join("uploads", Path.basename(path))

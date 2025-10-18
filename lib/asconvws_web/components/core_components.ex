@@ -187,7 +187,7 @@ defmodule AsconvwsWeb.CoreComponents do
 
     ~H"""
     <div class="fieldset">
-      <label>
+      <label class="flex items-center">
         <input type="hidden" name={@name} value="false" disabled={@rest[:disabled]} />
         <span class="label">
           <input
@@ -269,7 +269,7 @@ defmodule AsconvwsWeb.CoreComponents do
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
-    <div class="fieldset mb-2">
+    <div class="fieldset">
       <label>
         <span :if={@label} class="label mb-1">{@label}</span>
         <input

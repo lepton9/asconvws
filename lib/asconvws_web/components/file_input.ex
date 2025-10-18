@@ -9,7 +9,7 @@ defmodule AsconvwsWeb.Layouts.FileInput do
 
   def mode_toggle(assigns) do
     ~H"""
-    <div id="mode-toggle" class="flex items-center space-x-4 p-1">
+    <div id="mode-toggle" class="flex items-center space-x-4 p-1 mb-2">
       <span class={"font-bold #{if @mode == :url, do: "text-accent", else: "text-gray-500"}"}>
         URL
       </span>
@@ -52,7 +52,7 @@ defmodule AsconvwsWeb.Layouts.FileInput do
         phx-submit="submit"
         phx-change="validate"
         multipart={@mode == :file}
-        class="space-y-2"
+        class="space-y-3"
       >
         <%= if @mode == :url do %>
           <.input
@@ -119,7 +119,7 @@ defmodule AsconvwsWeb.Layouts.FileInput do
           class="w-20 border rounded px-2 py-1"
         />
 
-        <div class="flex items-center space-x-4 h-10">
+        <div class="flex items-center space-x-4 min-h-10">
           <.input
             field={f[:edges]}
             label="Edge detection"
@@ -176,36 +176,33 @@ defmodule AsconvwsWeb.Layouts.FileInput do
   def ascii(assigns) do
     ~H"""
     <div class="mt-6">
-      <div class="flex justify-between items-center">
-        <h2 class="font-bold mb-2">Input: {@filename}</h2>
+      <h2 class="m-2 overflow-auto">Input: {@filename}</h2>
+      <div class="flex justify-between items-center max-w-full m-2">
+        <label class="inline-flex items-center cursor-pointer space-x-2">
+          <span class="text-sm font-medium">
+            Fit
+          </span>
+          <.input
+            type="checkbox_bare"
+            label="Fit"
+            name="fit"
+            checked={@fit}
+            phx-click="toggle_fit"
+            class="toggle toggle-primary"
+          />
+        </label>
 
-        <div class="flex justify-between items-center space-x-10 mb-2">
-          <label class="inline-flex items-center cursor-pointer space-x-2">
-            <span class="ms-3 text-sm font-medium">
-              Fit
-            </span>
-            <.input
-              type="checkbox_bare"
-              label="Fit"
-              name="fit"
-              checked={@fit}
-              phx-click="toggle_fit"
-              class="toggle toggle-primary"
-            />
-          </label>
-
-          <.button
-            phx-hook="CopyToClipboard"
-            phx-update="ignore"
-            phx-click="copy_to_clipboard"
-            data-to="ascii-content"
-            id="copy-clipboard"
-            data-ripple-light="true"
-            variant="primary"
-          >
-            Copy to Clipboard
-          </.button>
-        </div>
+        <.button
+          phx-hook="CopyToClipboard"
+          phx-update="ignore"
+          phx-click="copy_to_clipboard"
+          data-to="ascii-content"
+          id="copy-clipboard"
+          data-ripple-light="true"
+          variant="primary"
+        >
+          Copy to Clipboard
+        </.button>
       </div>
       <pre
         id="ascii-content"
