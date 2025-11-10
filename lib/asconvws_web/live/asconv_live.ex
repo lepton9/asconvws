@@ -1,6 +1,8 @@
 defmodule AsconvwsWeb.AsconvLive do
   use AsconvwsWeb, :live_view
 
+  @program "asconv"
+
   @type state :: :done | :converting | :uploading
   @edge_algs [
     %{name: "Sobel", id: "1"},
@@ -8,6 +10,15 @@ defmodule AsconvwsWeb.AsconvLive do
     %{name: "LoG", id: "3"}
   ]
   @edge_algs_options Enum.map(@edge_algs, fn %{name: name, id: id} -> {name, id} end)
+
+  defp get_version() do
+    {version, status} = System.cmd(@program, ["--version"])
+
+    case status do
+      0 -> "v" <> version
+      _ -> ""
+    end
+  end
 
   def mount(_params, _session, socket) do
     form =
@@ -30,6 +41,7 @@ defmodule AsconvwsWeb.AsconvLive do
      socket
      |> assign(
        form: form,
+       version: get_version(),
        mode: :url,
        ascii: nil,
        width: 0,
@@ -155,7 +167,7 @@ defmodule AsconvwsWeb.AsconvLive do
 
   defp convert_to_ascii(path, params) do
     # exe = Path.join(:code.priv_dir(:asconvws), "asconv")
-    exe = "asconv"
+    exe = @program
 
     {out, status} = System.cmd(exe, make_args(path, params))
 
@@ -197,7 +209,7 @@ defmodule AsconvwsWeb.AsconvLive do
   def render(assigns) do
     ~H"""
     <div>
-      <Layouts.top_bar />
+      <Layouts.top_bar version={@version} />
       <Layouts.flash_group flash={@flash} />
 
       <div class="p-2">
