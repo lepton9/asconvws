@@ -39,6 +39,7 @@ defmodule AsconvwsWeb.Layouts.FileInput do
   attr :uploads, :any, required: true
   attr :edge_algs, :any, required: true
   attr :for, :any, required: true
+  attr :max_file_size, :integer, required: true
 
   def input_form(assigns) do
     ~H"""
@@ -79,6 +80,25 @@ defmodule AsconvwsWeb.Layouts.FileInput do
               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
           </div>
+
+          <div class="flex justify-between">
+            <p class="mt-2 text-xs text-gray-500">
+              Max file size: {file_size(@max_file_size)}
+            </p>
+            <%= if @uploads.file.entries != [] do %>
+              <p class="mt-2 text-xs text-gray-500">
+                Uploaded: {file_size(Map.get(List.first(@uploads.file.entries), :client_size))}
+              </p>
+            <% end %>
+          </div>
+
+          <%= for entry <- @uploads.file.entries do %>
+            <%= for err <- upload_errors(@uploads.file, entry) do %>
+              <p class="mt-2 text-sm text-red-600">
+                {upload_error_message(err, entry, @max_file_size)}
+              </p>
+            <% end %>
+          <% end %>
         <% end %>
 
         <div class="flex items-center space-x-4">
@@ -220,5 +240,41 @@ defmodule AsconvwsWeb.Layouts.FileInput do
     ~H"""
     <span class="loading loading-spinner loading-sm text-accent"></span>
     """
+  end
+
+  defp upload_error_message(:too_large, entry, max_file_size) do
+    client_size = Map.get(entry, :client_size)
+    max_size = file_size(max_file_size)
+
+    case client_size do
+      size when is_integer(size) and size > 0 ->
+        "File is too large (#{file_size(size)}). Max allowed is #{max_size}."
+
+      _ ->
+        "File is too large. Max allowed is #{max_size}."
+    end
+  end
+
+  defp upload_error_message(:not_accepted, _entry, _max_file_size) do
+    "Unsupported file type. Supported files: PNG, JPG, JPEG and GIF."
+  end
+
+  defp upload_error_message(_other, _entry, _max_file_size) do
+    "Upload failed. Try a different file."
+  end
+
+  defp file_size(bytes) when is_integer(bytes) and bytes >= 0 do
+    cond do
+      bytes >= 1024 * 1024 ->
+        mb = bytes / (1024 * 1024)
+        :erlang.float_to_binary(mb, decimals: 1) <> " MB"
+
+      bytes >= 1024 ->
+        kb = bytes / 1024
+        :erlang.float_to_binary(kb, decimals: 1) <> " KB"
+
+      true ->
+        Integer.to_string(bytes) <> " B"
+    end
   end
 end

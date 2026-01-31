@@ -20,6 +20,25 @@ if System.get_env("PHX_SERVER") do
   config :asconvws, AsconvwsWeb.Endpoint, server: true
 end
 
+max_upload_file_size =
+  case System.get_env("MAX_UPLOAD_FILE_SIZE_BYTES") do
+    nil ->
+      nil
+
+    "" ->
+      nil
+
+    val ->
+      case Integer.parse(val) do
+        {n, ""} when n > 0 -> n
+        _ -> nil
+      end
+  end
+
+if max_upload_file_size do
+  config :asconvws, max_upload_file_size: max_upload_file_size
+end
+
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.
   # A default value is used in config/dev.exs and config/test.exs but you

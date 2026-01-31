@@ -10,6 +10,11 @@ import Config
 config :asconvws,
   generators: [timestamp_type: :utc_datetime]
 
+# Upload limits
+# - max_upload_file_size: enforced by LiveView uploads (allow_upload/3)
+config :asconvws,
+  max_upload_file_size: 10 * 1024 * 1024
+
 # Configures the endpoint
 config :asconvws, AsconvwsWeb.Endpoint,
   url: [host: "127.0.0.1", port: 4000],

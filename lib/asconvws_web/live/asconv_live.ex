@@ -21,6 +21,9 @@ defmodule AsconvwsWeb.AsconvLive do
   end
 
   def mount(_params, _session, socket) do
+    max_upload_file_size =
+      Application.get_env(:asconvws, :max_upload_file_size, 10 * 1024 * 1024)
+
     form =
       to_form(
         %{
@@ -51,11 +54,13 @@ defmodule AsconvwsWeb.AsconvLive do
        state: :done,
        progress: 0,
        edge_algs: @edge_algs_options,
-       fit_to_window: false
+       fit_to_window: false,
+       max_upload_file_size: max_upload_file_size
      )
      |> allow_upload(:file,
        accept: ~w(.png .jpg .jpeg .gif),
        max_entries: 1,
+       max_file_size: max_upload_file_size,
        auto_upload: false,
        progress: &handle_progress/3
      )}
@@ -218,6 +223,7 @@ defmodule AsconvwsWeb.AsconvLive do
           mode={@mode}
           uploads={@uploads}
           edge_algs={@edge_algs}
+          max_file_size={@max_upload_file_size}
         />
 
         <%= if @state != :done do %>
