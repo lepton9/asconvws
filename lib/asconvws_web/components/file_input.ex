@@ -196,7 +196,10 @@ defmodule AsconvwsWeb.Layouts.FileInput do
   def ascii(assigns) do
     ~H"""
     <div class="mt-6">
-      <h2 class="m-2 overflow-auto">Input: {@filename}</h2>
+      <div class="flex space-x-20">
+        <h2 class="m-2 overflow-auto">Input: {@filename}</h2>
+        <h2 class="m-2 overflow-auto">Size: {div(@width, 2)}x{@height}</h2>
+      </div>
       <div class="flex justify-between items-center max-w-full m-2">
         <label class="inline-flex items-center cursor-pointer space-x-2">
           <span class="text-sm font-medium">
@@ -224,13 +227,21 @@ defmodule AsconvwsWeb.Layouts.FileInput do
           Copy to Clipboard
         </.button>
       </div>
+      <% area = div(@width, 2) * @height %>
       <pre
         id="ascii-content"
         phx-hook="FitAscii"
         data-fit={if @fit, do: "true", else: "false"}
         data-width={@width}
         data-height={@height}
-        class="bg-black font-mono p-4 overflow-auto text-sm text-neutral-50 transition-[font-size] duration-200 ease-in-out"
+        style="contain: layout paint;"
+        class={
+          "bg-black font-mono p-4 overflow-auto text-sm text-neutral-50 " <>
+            if(area > 0 and area <= 100_000,
+              do: "transition-[font-size] duration-150 ease-out",
+              else: ""
+            )
+        }
       >{@ascii}</pre>
     </div>
     """
